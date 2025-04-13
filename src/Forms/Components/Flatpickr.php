@@ -84,7 +84,7 @@ class Flatpickr extends DateTimePicker
 
     protected bool | Closure $timePicker = false;
 
-    protected FlatpickrMonthSelectorType | Closure $monthSelectorType = FlatpickrMonthSelectorType::STATIC_SELECTOR;
+    protected FlatpickrMonthSelectorType | Closure $monthSelectorType = FlatpickrMonthSelectorType::DROPDOWN_SELECTOR;
 
     protected function parseToCarbon($state): ?CarbonInterface
     {
@@ -850,6 +850,9 @@ class Flatpickr extends DateTimePicker
 
         if (filled($this->isMonthPicker())) {
             $attrs->put('monthPicker', FilamentFlatpickr::getBool($this->isMonthPicker()));
+        }
+        if (filled($this->getLocale())) {
+            $attrs->put('locale', $this->getLocale());
         }
         if (filled($this->isTimePicker())) {
             $isTimePicker = FilamentFlatpickr::getBool($this->isTimePicker());

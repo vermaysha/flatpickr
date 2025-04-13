@@ -37,9 +37,7 @@ export default function flatpickrComponent(state, attrs) {
       const customLocale = flatpickrLocales[this.locale] ?? flatpickrLocales['en'];
       const plugins = [
         new ConfirmDate({
-           confirmText: 'Confirm',
-          confirmIcon: '<i class="heroicon heroicon-o-check-circle"></i>',
-           showAlways: true,
+          showAlways: true,
         }),
       ];
       if (this.attrs.monthPicker) {
