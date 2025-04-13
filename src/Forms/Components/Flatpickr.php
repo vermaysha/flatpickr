@@ -866,6 +866,14 @@ class Flatpickr extends DateTimePicker
             }
         }
 
+        if ($this->filled($this->getMinDate())) {
+            $attrs->put('minDate', $this->getMinDate());
+        }
+
+        if ($this->filled($this->getMaxDate())) {
+            $attrs->put('maxDate', $this->getMaxDate());
+        }
+
         return $attrs->toArray();
     }
 }
