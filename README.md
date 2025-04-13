@@ -114,11 +114,27 @@ The package supports the following state types:
 ### Single Date Picker
 ![image](https://github.com/user-attachments/assets/015ae745-96bd-4b5a-990a-11bba852aa14)
 
-### MultiPicker
-![image](https://github.com/user-attachments/assets/524a58b7-2b4e-44aa-a578-f6913cbb7ccd)
+### Multiple Date Picker
+![image](https://github.com/user-attachments/assets/d896aa05-7907-4957-8d46-1d51d1393b91)
 
 ### Date Range Picker
 ![image](https://github.com/user-attachments/assets/3bcac5ad-5bfc-4a33-a320-3027c1e6a086)
+
+### Date-Time Picker
+![image](https://github.com/user-attachments/assets/1529a743-1c03-46b9-b0f5-0076e0a6b7e3)
+
+### Time-Only Picker
+![image](https://github.com/user-attachments/assets/f6bab802-6d9a-468e-a6fc-b8fd74454656)
+
+### Show Multiple Months
+![image](https://github.com/user-attachments/assets/0ea2e9f2-22df-45d3-a3d1-6430f283e6e0)
+
+### Week Picker
+![image](https://github.com/user-attachments/assets/ea648d29-1bc2-46b7-9d82-301f500fab78)
+
+
+### Month Picker
+![image](https://github.com/user-attachments/assets/e542c3d7-08ac-411d-874b-7ae0718ea000)
 
 
 ## Testing
