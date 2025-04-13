@@ -52,6 +52,7 @@ class Flatpickr extends DateTimePicker
 
     protected int | Closure $hourIncrement = 1;
 
+    protected bool | Closure $inline = false;
     protected int | Closure $minuteIncrement = 5;
 
     protected FlatpickrMode | Closure $mode = FlatpickrMode::SINGLE;
@@ -518,6 +519,13 @@ class Flatpickr extends DateTimePicker
         return $this;
     }
 
+    public function inline(Closure | bool $inline = true): Flatpickr
+    {
+        $this->inline = $inline;
+
+        return $this;
+    }
+
     // Getters
 
     /**
@@ -707,6 +715,11 @@ class Flatpickr extends DateTimePicker
         return FilamentFlatpickr::getBool($this->evaluate($this->multiplePicker) || $this->getMode()->value === FlatpickrMode::MULTIPLE->value);
     }
 
+    public function isInline(): bool
+    {
+        return FilamentFlatpickr::getBool($this->evaluate($this->inline));
+    }
+
     public function getFlatpickrAttributes(): array
     {
         $attrs = collect();
@@ -866,12 +879,16 @@ class Flatpickr extends DateTimePicker
             }
         }
 
-        if ($this->filled($this->getMinDate())) {
+        if (filled($this->getMinDate())) {
             $attrs->put('minDate', $this->getMinDate());
         }
 
-        if ($this->filled($this->getMaxDate())) {
+        if (filled($this->getMaxDate())) {
             $attrs->put('maxDate', $this->getMaxDate());
+        }
+
+        if (filled($this->isInline())) {
+            $attrs->put('inline', $this->isInline());
         }
 
         return $attrs->toArray();
