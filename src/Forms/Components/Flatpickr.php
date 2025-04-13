@@ -17,76 +17,76 @@ class Flatpickr extends DateTimePicker
 {
     protected string $view = 'flatpickr::forms.components.flatpickr';
 
-    protected bool|Closure $isNative = false;
+    protected bool | Closure $isNative = false;
 
     // Add all the following as protected properties: https://flatpickr.js.org/options/
-    protected bool|Closure $altInput = true;
+    protected bool | Closure $altInput = true;
 
-    protected string|Closure $altInputClass = '';
+    protected string | Closure $altInputClass = '';
 
-    protected bool|Closure $allowInput = false;
+    protected bool | Closure $allowInput = false;
 
-    protected bool|Closure $allowInvalidPreload = false;
+    protected bool | Closure $allowInvalidPreload = false;
 
-    protected string|Closure|null $appendTo = null;
+    protected string | Closure | null $appendTo = null;
 
-    protected string|Closure|null $ariaDateFormat = null;
+    protected string | Closure | null $ariaDateFormat = null;
 
-    protected string|Closure $conjunction = ',';
+    protected string | Closure $conjunction = ',';
 
-    protected bool|Closure $clickOpens = true;
+    protected bool | Closure $clickOpens = true;
 
-    protected string|Closure|null $dateFormat = null;
+    protected string | Closure | null $dateFormat = null;
 
-    protected string|Closure|array|null $defaultDate = null;
+    protected string | Closure | array | null $defaultDate = null;
 
-    protected int|Closure $defaultHour = 12;
+    protected int | Closure $defaultHour = 12;
 
-    protected int|Closure $defaultMinute = 0;
+    protected int | Closure $defaultMinute = 0;
 
-    protected array|Closure|null $disableDates = null;
+    protected array | Closure | null $disableDates = null;
 
-    protected bool|Closure $disableMobile = false;
+    protected bool | Closure $disableMobile = false;
 
-    protected array|Closure|null $enableDates = null;
+    protected array | Closure | null $enableDates = null;
 
-    protected int|Closure $hourIncrement = 1;
+    protected int | Closure $hourIncrement = 1;
 
-    protected bool|Closure $inline = false;
+    protected bool | Closure $inline = false;
 
-    protected int|Closure $minuteIncrement = 5;
+    protected int | Closure $minuteIncrement = 5;
 
-    protected FlatpickrMode|Closure $mode = FlatpickrMode::SINGLE;
+    protected FlatpickrMode | Closure $mode = FlatpickrMode::SINGLE;
 
-    protected bool|Closure $noCalendar = false;
+    protected bool | Closure $noCalendar = false;
 
-    protected FlatpickrPosition|Closure $position = FlatpickrPosition::AUTO;
+    protected FlatpickrPosition | Closure $position = FlatpickrPosition::AUTO;
 
-    protected string|Closure|null $prevArrow = null;
+    protected string | Closure | null $prevArrow = null;
 
-    protected string|Closure|null $nextArrow = null;
+    protected string | Closure | null $nextArrow = null;
 
-    protected bool|Closure $shorthandCurrentMonth = false;
+    protected bool | Closure $shorthandCurrentMonth = false;
 
-    protected int|Closure $showMonths = 1;
+    protected int | Closure $showMonths = 1;
 
-    protected bool|Closure $time24hr = true;
+    protected bool | Closure $time24hr = true;
 
-    protected bool|Closure $hasTime = false;
+    protected bool | Closure $hasTime = false;
 
-    protected bool|Closure $weekNumbers = false;
+    protected bool | Closure $weekNumbers = false;
 
-    protected bool|Closure $weekPicker = false;
+    protected bool | Closure $weekPicker = false;
 
-    protected bool|Closure $monthPicker = false;
+    protected bool | Closure $monthPicker = false;
 
-    protected bool|Closure $rangePicker = false;
+    protected bool | Closure $rangePicker = false;
 
-    protected bool|Closure $multiplePicker = false;
+    protected bool | Closure $multiplePicker = false;
 
-    protected bool|Closure $timePicker = false;
+    protected bool | Closure $timePicker = false;
 
-    protected FlatpickrMonthSelectorType|Closure $monthSelectorType = FlatpickrMonthSelectorType::DROPDOWN_SELECTOR;
+    protected FlatpickrMonthSelectorType | Closure $monthSelectorType = FlatpickrMonthSelectorType::DROPDOWN_SELECTOR;
 
     protected function parseToCarbon($state): ?CarbonInterface
     {
@@ -120,21 +120,21 @@ class Flatpickr extends DateTimePicker
         if ($component->isMultiplePicker()) {
             $conjunction = $this->getConjunction();
             if (is_array($state)) {
-                $state = collect($state)->map(static fn($date) => $component->parseToCarbon($date));
+                $state = collect($state)->map(static fn ($date) => $component->parseToCarbon($date));
             } else {
-                $state = collect([$state])->map(static fn($date) => $component->parseToCarbon($date));
+                $state = collect([$state])->map(static fn ($date) => $component->parseToCarbon($date));
             }
             $state = $state
-                ->filter(static fn($date) => $date instanceof CarbonInterface);
+                ->filter(static fn ($date) => $date instanceof CarbonInterface);
         } elseif ($component->isRangePicker()) {
             $conjunction = ' to ';
             if (is_array($state)) {
-                $state = collect($state)->map(static fn($date) => $component->parseToCarbon($date));
+                $state = collect($state)->map(static fn ($date) => $component->parseToCarbon($date));
             } else {
-                $state = collect([$state])->map(static fn($date) => $component->parseToCarbon($date));
+                $state = collect([$state])->map(static fn ($date) => $component->parseToCarbon($date));
             }
             $state = $state
-                ->filter(static fn($date) => $date instanceof CarbonInterface)
+                ->filter(static fn ($date) => $date instanceof CarbonInterface)
                 ->take(2);
         } else {
             $conjunction = null;
@@ -142,13 +142,13 @@ class Flatpickr extends DateTimePicker
         }
 
         if ($state instanceof CarbonInterface) {
-            if (!$component->isNative()) {
+            if (! $component->isNative()) {
                 $component->state($state->format($component->getFormat()));
 
                 return;
             }
 
-            if (!$component->hasTime()) {
+            if (! $component->hasTime()) {
                 $component->state($state->toDateString());
 
                 return;
@@ -156,7 +156,7 @@ class Flatpickr extends DateTimePicker
 
             $precision = $component->hasSeconds() ? 'second' : 'minute';
 
-            if (!$component->hasDate()) {
+            if (! $component->hasDate()) {
                 $component->state($state->toTimeString($precision));
 
                 return;
@@ -165,14 +165,14 @@ class Flatpickr extends DateTimePicker
             $component->state($state->toDateTimeString($precision));
         } elseif ($state instanceof Collection) {
             $state = $state->map(function ($date) use ($component) {
-                if (!$component->isNative()) {
+                if (! $component->isNative()) {
                     return $date->format($component->getFormat());
                 }
-                if (!$component->hasTime()) {
+                if (! $component->hasTime()) {
                     return $date->toDateString();
                 }
                 $precision = $component->hasSeconds() ? 'second' : 'minute';
-                if (!$component->hasDate()) {
+                if (! $component->hasDate()) {
                     return $date->toTimeString($precision);
                 }
 
@@ -189,19 +189,20 @@ class Flatpickr extends DateTimePicker
         }
     }
 
-    public static function dehydrateFlatpickr(Flatpickr $component, $state): array|CarbonInterface|null
+    public static function dehydrateFlatpickr(Flatpickr $component, $state): array | CarbonInterface | null
     {
         if (blank($state)) {
             return null;
         }
         $component->rule(
             'date',
-            static fn(Flatpickr $component
-            ): bool => $component->isMultiplePicker() && !$component->isRangePicker() && $component->hasDate(),
+            static fn (
+                Flatpickr $component
+            ): bool => $component->isMultiplePicker() && ! $component->isRangePicker() && $component->hasDate(),
         );
 
         // try to convert the state to a Carbon instance
-        if (!($component->isMultiplePicker() || $component->isRangePicker())) {
+        if (! ($component->isMultiplePicker() || $component->isRangePicker())) {
             try {
                 $res = $component->parseToCarbon($state);
                 if ($res) {
@@ -213,7 +214,7 @@ class Flatpickr extends DateTimePicker
             }
         }
 
-        if (!$state instanceof CarbonInterface) {
+        if (! $state instanceof CarbonInterface) {
             if (is_string($state)) {
                 if ($component->isRangePicker()) {
                     $range = str($state)->explode(' to ');
@@ -227,17 +228,17 @@ class Flatpickr extends DateTimePicker
                     $date = $component->parseToCarbon($date)
                         ->setTimezone($component->getTimezone());
 
-                    if (!$component->isNative()) {
+                    if (! $component->isNative()) {
                         return $date->format($component->getFormat());
                     }
 
-                    if (!$component->hasTime()) {
+                    if (! $component->hasTime()) {
                         return $date->toDateString();
                     }
 
                     $precision = $component->hasSeconds() ? 'second' : 'minute';
 
-                    if (!$component->hasDate()) {
+                    if (! $component->hasDate()) {
                         return $date->toTimeString($precision);
                     }
 
@@ -254,99 +255,103 @@ class Flatpickr extends DateTimePicker
 
     protected function setUp(): void
     {
-        $this->afterStateHydrated(fn(Flatpickr $component, $state) => $component->hydrateFlatpickr(
+        $this->afterStateHydrated(fn (Flatpickr $component, $state) => $component->hydrateFlatpickr(
             $component,
             $state
         ));
 
-        $this->dehydrateStateUsing(fn(Flatpickr $component, $state) => $component::dehydrateFlatpickr($component,
-            $state));
+        $this->dehydrateStateUsing(fn (Flatpickr $component, $state) => $component::dehydrateFlatpickr(
+            $component,
+            $state
+        ));
     }
 
-    public function altFormat(Closure|string|null $altFormat): Flatpickr
+    public function altFormat(Closure | string | null $altFormat): Flatpickr
     {
         $this->displayFormat($altFormat);
 
         return $this;
     }
 
-    public function altInput(Closure|bool $altInput = true): Flatpickr
+    public function altInput(Closure | bool $altInput = true): Flatpickr
     {
         $this->altInput = $altInput;
 
         return $this;
     }
 
-    public function altInputClass(Closure|string $altInputClass): Flatpickr
+    public function altInputClass(Closure | string $altInputClass): Flatpickr
     {
         $this->altInputClass = $altInputClass;
 
         return $this;
     }
 
-    public function allowInput(Closure|bool $allowInput = true): Flatpickr
+    public function allowInput(Closure | bool $allowInput = true): Flatpickr
     {
         $this->allowInput = $allowInput;
 
         return $this;
     }
 
-    public function allowInvalidPreload(Closure|bool $allowInvalidPreload = true): Flatpickr
+    public function allowInvalidPreload(Closure | bool $allowInvalidPreload = true): Flatpickr
     {
         $this->allowInvalidPreload = $allowInvalidPreload;
 
         return $this;
     }
 
-    public function appendTo(Closure|string|null $appendTo = null): Flatpickr
+    public function appendTo(Closure | string | null $appendTo = null): Flatpickr
     {
         $this->appendTo = $appendTo;
 
         return $this;
     }
 
-    public function ariaDateFormat(Closure|string|null $ariaDateFormat): Flatpickr
+    public function ariaDateFormat(Closure | string | null $ariaDateFormat): Flatpickr
     {
         $this->ariaDateFormat = $ariaDateFormat;
 
         return $this;
     }
 
-    public function conjunction(Closure|string $conjunction = ','): Flatpickr
+    public function conjunction(Closure | string $conjunction = ','): Flatpickr
     {
         $this->conjunction = $conjunction;
 
         return $this;
     }
 
-    public function clickOpens(Closure|bool $clickOpens = true): Flatpickr
+    public function clickOpens(Closure | bool $clickOpens = true): Flatpickr
     {
         $this->clickOpens = $clickOpens;
 
         return $this;
     }
 
-    public function maxDate(CarbonInterface|string|Closure|null $date): static
+    public function maxDate(CarbonInterface | string | Closure | null $date): static
     {
         $this->maxDate = $date;
 
-        if (!$this->isMultiplePicker() && !$this->isRangePicker()) {
+        if (! $this->isMultiplePicker() && ! $this->isRangePicker()) {
             $this->rule(static function (DateTimePicker $component) {
                 return "before_or_equal:{$component->getMaxDate()}";
-            }, static fn(DateTimePicker $component): bool => (bool) $component->getMaxDate());
+            }, static fn (DateTimePicker $component): bool => (bool) $component->getMaxDate());
         }
+
         return $this;
     }
 
-    public function minDate(CarbonInterface|string|Closure|null $date): static
+    public function minDate(CarbonInterface | string | Closure | null $date): static
     {
         $this->minDate = $date;
 
-        if (!$this->isMultiplePicker() && !$this->isRangePicker()) {
+        if (! $this->isMultiplePicker() && ! $this->isRangePicker()) {
             $this->rule(static function (DateTimePicker $component) {
                 return "after_or_equal:{$component->getMinDate()}";
-            }, static fn(DateTimePicker $component): bool => (bool) $component->getMinDate());
+            }, static fn (DateTimePicker $component): bool => (bool) $component->getMinDate());
         }
+
         return $this;
     }
 
@@ -355,49 +360,49 @@ class Flatpickr extends DateTimePicker
      *
      * @deprecated use format() instead
      */
-    public function dateFormat(Closure|string|null $dateFormat): Flatpickr
+    public function dateFormat(Closure | string | null $dateFormat): Flatpickr
     {
         $this->format($dateFormat);
 
         return $this;
     }
 
-    public function defaultDate(Closure|string|array|null $defaultDate): Flatpickr
+    public function defaultDate(Closure | string | array | null $defaultDate): Flatpickr
     {
         $this->defaultDate = $defaultDate;
 
         return $this;
     }
 
-    public function defaultHour(Closure|int $defaultHour): Flatpickr
+    public function defaultHour(Closure | int $defaultHour): Flatpickr
     {
         $this->defaultHour = $defaultHour;
 
         return $this;
     }
 
-    public function defaultMinute(Closure|int $defaultMinute): Flatpickr
+    public function defaultMinute(Closure | int $defaultMinute): Flatpickr
     {
         $this->defaultMinute = $defaultMinute;
 
         return $this;
     }
 
-    public function disableDates(Closure|array|null $disableDates = null): Flatpickr
+    public function disableDates(Closure | array | null $disableDates = null): Flatpickr
     {
         $this->disableDates = $disableDates;
 
         return $this;
     }
 
-    public function disableMobile(Closure|bool $disableMobile = true): Flatpickr
+    public function disableMobile(Closure | bool $disableMobile = true): Flatpickr
     {
         $this->disableMobile = $disableMobile;
 
         return $this;
     }
 
-    public function enableDates(Closure|array|null $enableDates): Flatpickr
+    public function enableDates(Closure | array | null $enableDates): Flatpickr
     {
         $this->enableDates = $enableDates;
 
@@ -409,7 +414,7 @@ class Flatpickr extends DateTimePicker
      *
      * @deprecated use time() instead
      */
-    public function enableTime(Closure|bool $enableTime = true): Flatpickr
+    public function enableTime(Closure | bool $enableTime = true): Flatpickr
     {
         $this->time($enableTime);
 
@@ -421,126 +426,126 @@ class Flatpickr extends DateTimePicker
      *
      * @deprecated use seconds() instead
      */
-    public function enableSeconds(Closure|bool $enableSeconds = true): Flatpickr
+    public function enableSeconds(Closure | bool $enableSeconds = true): Flatpickr
     {
         $this->seconds($enableSeconds);
 
         return $this;
     }
 
-    public function hourIncrement(Closure|int $hourIncrement): Flatpickr
+    public function hourIncrement(Closure | int $hourIncrement): Flatpickr
     {
         $this->hourIncrement = $hourIncrement;
 
         return $this;
     }
 
-    public function minuteIncrement(Closure|int $minuteIncrement): Flatpickr
+    public function minuteIncrement(Closure | int $minuteIncrement): Flatpickr
     {
         $this->minuteIncrement = $minuteIncrement;
 
         return $this;
     }
 
-    public function mode(Closure|FlatpickrMode $mode): Flatpickr
+    public function mode(Closure | FlatpickrMode $mode): Flatpickr
     {
         $this->mode = $mode;
 
         return $this;
     }
 
-    public function noCalendar(Closure|bool $noCalendar = true): Flatpickr
+    public function noCalendar(Closure | bool $noCalendar = true): Flatpickr
     {
         $this->noCalendar = $noCalendar;
 
         return $this;
     }
 
-    public function position(Closure|FlatpickrPosition $position): Flatpickr
+    public function position(Closure | FlatpickrPosition $position): Flatpickr
     {
         $this->position = $position;
 
         return $this;
     }
 
-    public function prevArrow(Closure|string|null $prevArrow): Flatpickr
+    public function prevArrow(Closure | string | null $prevArrow): Flatpickr
     {
         $this->prevArrow = $prevArrow;
 
         return $this;
     }
 
-    public function nextArrow(Closure|string|null $nextArrow): Flatpickr
+    public function nextArrow(Closure | string | null $nextArrow): Flatpickr
     {
         $this->nextArrow = $nextArrow;
 
         return $this;
     }
 
-    public function shorthandCurrentMonth(Closure|bool $shorthandCurrentMonth = true): Flatpickr
+    public function shorthandCurrentMonth(Closure | bool $shorthandCurrentMonth = true): Flatpickr
     {
         $this->shorthandCurrentMonth = $shorthandCurrentMonth;
 
         return $this;
     }
 
-    public function showMonths(Closure|int $showMonths = 2): Flatpickr
+    public function showMonths(Closure | int $showMonths = 2): Flatpickr
     {
         $this->showMonths = $showMonths;
 
         return $this;
     }
 
-    public function time24hr(Closure|bool $time24hr = true): Flatpickr
+    public function time24hr(Closure | bool $time24hr = true): Flatpickr
     {
         $this->time24hr = $time24hr;
 
         return $this;
     }
 
-    public function weekNumbers(Closure|bool $weekNumbers = true): Flatpickr
+    public function weekNumbers(Closure | bool $weekNumbers = true): Flatpickr
     {
         $this->weekNumbers = $weekNumbers;
 
         return $this;
     }
 
-    public function monthSelectorType(Closure|FlatpickrMonthSelectorType $monthSelectorType): Flatpickr
+    public function monthSelectorType(Closure | FlatpickrMonthSelectorType $monthSelectorType): Flatpickr
     {
         $this->monthSelectorType = $monthSelectorType;
 
         return $this;
     }
 
-    public function weekPicker(Closure|bool $weekPicker = true): Flatpickr
+    public function weekPicker(Closure | bool $weekPicker = true): Flatpickr
     {
         $this->weekPicker = $weekPicker;
 
         return $this;
     }
 
-    public function monthPicker(Closure|bool $monthPicker = true): Flatpickr
+    public function monthPicker(Closure | bool $monthPicker = true): Flatpickr
     {
         $this->monthPicker = $monthPicker;
 
         return $this;
     }
 
-    public function rangePicker(Closure|bool $rangePicker = true): Flatpickr
+    public function rangePicker(Closure | bool $rangePicker = true): Flatpickr
     {
         $this->rangePicker = $rangePicker;
 
         return $this;
     }
 
-    public function multiplePicker(Closure|bool $multiplePicker = true): Flatpickr
+    public function multiplePicker(Closure | bool $multiplePicker = true): Flatpickr
     {
         $this->multiplePicker = $multiplePicker;
 
         return $this;
     }
 
-    public function timePicker(Closure|bool $timePicker = true): Flatpickr
+    public function timePicker(Closure | bool $timePicker = true): Flatpickr
     {
         $this->timePicker = $timePicker;
         $this->time($timePicker);
@@ -549,7 +554,7 @@ class Flatpickr extends DateTimePicker
         return $this;
     }
 
-    public function inline(Closure|bool $inline = true): Flatpickr
+    public function inline(Closure | bool $inline = true): Flatpickr
     {
         $this->inline = $inline;
 
@@ -614,7 +619,7 @@ class Flatpickr extends DateTimePicker
         return $this->evaluate($this->dateFormat);
     }
 
-    public function getDefaultDate(): string|array|null
+    public function getDefaultDate(): string | array | null
     {
         return $this->evaluate($this->defaultDate);
     }
@@ -905,7 +910,7 @@ class Flatpickr extends DateTimePicker
                 $attrs->put('enableTime', true);
             }
 
-            if ($isTimePicker && (!$this->getFormat() || str($this->getFormat())->contains(['Y', 'm', 'd']))) {
+            if ($isTimePicker && (! $this->getFormat() || str($this->getFormat())->contains(['Y', 'm', 'd']))) {
                 $attrs->put('dateFormat', $this->hasSeconds() ? 'H:i:S' : 'H:i');
                 $attrs->put('altFormat', $this->hasSeconds() ? 'h:i:S K' : 'h:i K');
             }
