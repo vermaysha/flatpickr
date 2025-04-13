@@ -899,9 +899,11 @@ class Flatpickr extends DateTimePicker
         }
         if (filled($this->isTimePicker())) {
             $isTimePicker = FilamentFlatpickr::getBool($this->isTimePicker());
-            $attrs->put('timePicker', $isTimePicker);
-            $attrs->put('noCalendar', $isTimePicker);
-            $attrs->put('enableTime', $isTimePicker);
+            if ($isTimePicker) {
+                $attrs->put('timePicker', true);
+                $attrs->put('noCalendar', true);
+                $attrs->put('enableTime', true);
+            }
 
             if ($isTimePicker && (!$this->getFormat() || str($this->getFormat())->contains(['Y', 'm', 'd']))) {
                 $attrs->put('dateFormat', $this->hasSeconds() ? 'H:i:S' : 'H:i');

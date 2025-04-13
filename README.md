@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://github.com/coolsam726/flatpickr/actions?query=workflow%3Arun-tests+branch%3Amain"><img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/coolsam726/flatpickr/run-tests.yml?branch=main&label=tests&style=for-the-badge&logo=github"></a>
-    <a href="https://github.com/coolsam726/flatpickr/actions?query=workflow%fix-php-code-style-issues+branch%3Amain"><img alt="Styling" src="https://img.shields.io/github/actions/workflow/status/coolsam726/flatpickr/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=for-the-badge&logo=github"></a>
+    <a href="https://github.com/coolsam726/flatpickr/actions?query=workflow%php-code-styling+branch%3Amain"><img alt="Styling" src="https://img.shields.io/github/actions/workflow/status/coolsam726/flatpickr/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=for-the-badge&logo=github"></a>
     <a href="https://laravel.com"><img alt="Laravel v9.x" src="https://img.shields.io/badge/Laravel-v12.x-FF2D20?style=for-the-badge&logo=laravel"></a>
     <a href="https://filamentphp.com"><img alt="Filament v3.x" src="https://img.shields.io/badge/FilamentPHP-v3.x-FB70A9?style=for-the-badge&logo=filament"></a>
     <a href="https://php.net"><img alt="PHP 8.1" src="https://img.shields.io/badge/PHP-8.4-777BB4?style=for-the-badge&logo=php"></a>
