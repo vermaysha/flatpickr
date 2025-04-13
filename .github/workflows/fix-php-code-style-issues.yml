@@ -5,8 +5,8 @@ on:
     paths:
       - '**.php'
     branches-ignore:
-      - main
-      - staging
+#      - main
+#      - staging
 
 permissions:
   contents: write
