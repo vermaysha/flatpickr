@@ -1,9 +1,9 @@
 <?php
 
-namespace Coolsam\FilamentFlatpickr\Enums;
+namespace Coolsam\Flatpickr\Enums;
 
 enum FlatpickrMonthSelectorType: string
 {
-    case DROPDOWN = 'dropdown';
-    case STATIK = 'static';
+    case DROPDOWN_SELECTOR = 'dropdown';
+    case STATIC_SELECTOR = 'static';
 }

@@ -1,827 +1,868 @@
 <?php
 
-namespace Coolsam\FilamentFlatpickr\Forms\Components;
+namespace Coolsam\Flatpickr\Forms\Components;
 
-use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Carbon\Exceptions\InvalidFormatException;
 use Closure;
-use Coolsam\FilamentFlatpickr\Enums\FlatpickrMode;
-use Coolsam\FilamentFlatpickr\Enums\FlatpickrMonthSelectorType;
-use Coolsam\FilamentFlatpickr\Enums\FlatpickrPosition;
-use Coolsam\FilamentFlatpickr\Enums\FlatpickrTheme;
-use Filament\Forms\Components\Concerns;
-use Filament\Forms\Components\Contracts;
-use Filament\Forms\Components\Field;
-use Filament\Support\Concerns\HasExtraAlpineAttributes;
+use Coolsam\Flatpickr\Enums\FlatpickrMode;
+use Coolsam\Flatpickr\Enums\FlatpickrMonthSelectorType;
+use Coolsam\Flatpickr\Enums\FlatpickrPosition;
+use Coolsam\Flatpickr\FilamentFlatpickr;
+use Filament\Forms\Components\DateTimePicker;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
-class Flatpickr extends Field implements Contracts\CanBeLengthConstrained, Contracts\HasAffixActions
+class Flatpickr extends DateTimePicker
 {
-    use Concerns\CanBeAutocapitalized;
-    use Concerns\CanBeAutocompleted;
-    use Concerns\CanBeLengthConstrained;
-    use Concerns\CanBeReadOnly;
-    use Concerns\HasAffixes;
-    use Concerns\HasExtraInputAttributes;
-    use Concerns\HasInputMode;
-    use Concerns\HasPlaceholder;
-    use HasExtraAlpineAttributes;
+    protected string $view = 'flatpickr::forms.components.flatpickr';
 
-    const PACKAGE_NAME = 'coolsam/flatpickr';
+    protected bool | Closure $isNative = false;
 
-    protected string $view = 'coolsam-flatpickr::forms.components.flatpickr';
+    // Add all the following as protected properties: https://flatpickr.js.org/options/
+    protected bool | Closure $altInput = true;
 
-    protected bool $monthSelect = false;
+    protected string | Closure $altInputClass = '';
 
-    protected bool $time = false;
+    protected bool | Closure $allowInput = false;
 
-    protected bool $weekSelect = false;
+    protected bool | Closure $allowInvalidPreload = false;
 
-    protected bool $rangePicker = false;
+    protected string | Closure | null $appendTo = null;
 
-    protected FlatpickrMode $mode = FlatpickrMode::SINGLE;
+    protected string | Closure | null $ariaDateFormat = null;
 
-    protected bool $multiplePicker = false;
+    protected string | Closure $conjunction = ',';
 
-    protected bool $altInput = false;
+    protected bool | Closure $clickOpens = true;
 
-    protected array $config = [];
+    protected string | Closure | null $dateFormat = null;
 
-    protected ?string $altFormat = 'F j, Y';
+    protected string | Closure | array | null $defaultDate = null;
 
-    protected bool $enableTime = false;
+    protected int | Closure $defaultHour = 12;
 
-    protected ?string $dateFormat = 'Y-m-d';
+    protected int | Closure $defaultMinute = 0;
 
-    protected FlatpickrTheme $theme = FlatpickrTheme::DEFAULT;
+    protected array | Closure | null $disableDates = null;
 
-    protected ?string $altInputClass = '';
+    protected bool | Closure $disableMobile = false;
 
-    protected bool $allowInput = false;
+    protected array | Closure | null $enableDates = null;
 
-    protected bool $allowInvalidPreload = false;
+    protected int | Closure $hourIncrement = 1;
 
-    protected ?string $ariaDateFormat = 'F j, Y';
+    protected int | Closure $minuteIncrement = 5;
 
-    protected ?string $conjunction = ',';
+    protected FlatpickrMode | Closure $mode = FlatpickrMode::SINGLE;
 
-    protected bool $clickOpens = true;
+    protected bool | Closure $noCalendar = false;
 
-    protected int $defaultHour = 12;
+    protected FlatpickrPosition | Closure $position = FlatpickrPosition::AUTO;
 
-    protected int $defaultMinute = 0;
+    protected string | Closure | null $prevArrow = null;
 
-    protected int $defaultSeconds = 0;
+    protected string | Closure | null $nextArrow = null;
 
-    protected array $disabledDates = [];
+    protected bool | Closure $shorthandCurrentMonth = false;
 
-    protected ?array $enabledDates = null;
+    protected int | Closure $showMonths = 1;
 
-    protected bool $disableMobile = false;
+    protected bool | Closure $time24hr = true;
 
-    protected bool $enableSeconds = false;
+    protected bool | Closure $hasTime = false;
 
-    protected int $hourIncrement = 1;
+    protected bool | Closure $weekNumbers = false;
 
-    protected int $minuteIncrement = 5;
+    protected bool | Closure $weekPicker = false;
 
-    protected bool $inline = false;
+    protected bool | Closure $monthPicker = false;
 
-    protected Carbon|string|null|Closure $maxDate = null;
+    protected bool | Closure $rangePicker = false;
 
-    protected Carbon|string|null|Closure $minDate = null;
+    protected bool | Closure $multiplePicker = false;
 
-    protected ?string $maxTime = null;
+    protected bool | Closure $timePicker = false;
 
-    protected ?string $minTime = null;
+    protected FlatpickrMonthSelectorType | Closure $monthSelectorType = FlatpickrMonthSelectorType::STATIC_SELECTOR;
 
-    protected ?string $nextArrow = '>';
-
-    protected ?string $prevArrow = '<';
-
-    protected bool $noCalendar = false;
-
-    protected bool $shorthandCurrentMonth = false;
-
-    protected bool $static = false;
-
-    protected bool $use24hr = false;
-
-    protected bool $weekNumbers = false;
-
-    protected bool $wrap = false;
-
-    protected int $showMonths = 1;
-
-    protected FlatpickrPosition $position = FlatpickrPosition::AUTO;
-
-    protected FlatpickrMonthSelectorType $monthSelectorType = FlatpickrMonthSelectorType::DROPDOWN;
-
-    protected bool $animate = true;
-
-    protected bool $closeOnSelect = true;
-
-    public function getConfig(): array
+    protected function parseToCarbon($state): ?CarbonInterface
     {
-        if ($this->isRangePicker()) {
-            $this->mode(FlatpickrMode::RANGE);
-        } elseif ($this->isMultiplePicker()) {
-            $this->mode(FlatpickrMode::MULTIPLE);
-        }
-        if ($this->isEnableTime()) {
-            if (! \Str::of($this->getDateFormat())->contains('H', ignoreCase: true)) {
-                $this->dateFormat('Y-m-d H:i:s');
-            }
-            if (! \Str::of($this->getAltFormat())->contains('H', ignoreCase: true)) {
-                $this->altFormat('F j Y H:i K');
-            }
-        }
-        if ($this->isTime()) {
-            $this->mode(FlatpickrMode::TIME);
-            $this->noCalendar();
-            $this->enableTime();
-            if (\Str::of($this->getDateFormat())->contains('Y')) {
-                $this->dateFormat($this->isUse24hr() ? 'H:i' : 'h:i K');
-            }
-        } elseif ($this->isMonthSelect()) {
-            $this->mode(FlatpickrMode::SINGLE);
-            $this->enableTime(false);
-            $this->time(false);
-            $this->range(false);
-            if (\Str::of($this->getDateFormat())->contains('d', ignoreCase: true)) {
-                $this->dateFormat('Y-m'); // Setting default date format to Y-m if no date format is set by user
-            }
-            if (\Str::of($this->getAltFormat())->contains('d', ignoreCase: true)) {
-                $this->altFormat('F Y'); // Setting default alt format to F Y if no alt format is set by user
-            }
-        } elseif ($this->isWeekSelect()) {
-            $this->mode(FlatpickrMode::SINGLE);
-            $this->enableTime(false);
-            $this->time(false);
-            $this->range(false);
-            if (\Str::of($this->getDateFormat())->contains(['d', 'y'], ignoreCase: true)) {
-                $this->dateFormat('W'); // Setting default date format to W if no date format is set by user
-            }
-            if (\Str::of($this->getAltFormat())->contains(['d', 'y'], ignoreCase: true)) {
-                $this->altFormat('\Week W'); // Setting default alt format to Week W if no alt format is set by user
-            }
-        }
-        $config = [
-            'monthSelect' => $this->monthSelect,
-            'weekSelect' => $this->weekSelect,
-            'mode' => $this->mode->value,
-            'altInput' => $this->altInput,
-            'altFormat' => $this->altFormat,
-            'enableTime' => $this->enableTime,
-            'dateFormat' => $this->dateFormat,
-            'theme' => $this->theme->value,
-            'altInputClass' => $this->altInputClass,
-            'allowInput' => $this->allowInput,
-            'allowInvalidPreload' => $this->allowInvalidPreload,
-            'ariaDateFormat' => $this->ariaDateFormat,
-            'conjunction' => $this->conjunction,
-            'clickOpens' => $this->clickOpens,
-            'defaultHour' => $this->defaultHour,
-            'defaultMinute' => $this->defaultMinute,
-            'defaultSeconds' => $this->defaultSeconds,
-            'disable' => $this->disabledDates,
-            'disableMobile' => $this->disableMobile,
-            'enableSeconds' => $this->enableSeconds,
-            'hourIncrement' => $this->hourIncrement,
-            'minuteIncrement' => $this->minuteIncrement,
-            'inline' => $this->inline,
-            'minDate' => $this->minDate,
-            'maxDate' => $this->maxDate,
-            'minTime' => $this->minTime,
-            'maxTime' => $this->maxTime,
-            'nextArrow' => $this->nextArrow,
-            'prevArrow' => $this->prevArrow,
-            'noCalendar' => $this->noCalendar,
-            'shorthandCurrentMonth' => $this->shorthandCurrentMonth,
-            'time_24hr' => $this->use24hr,
-            'weekNumbers' => $this->weekNumbers,
-            'wrap' => $this->wrap,
-            'showMonths' => $this->showMonths,
-            'position' => $this->position->value,
-            'monthSelectorType' => $this->monthSelectorType->value,
-            'animate' => $this->animate,
-            'closeOnSelect' => $this->closeOnSelect,
-        ];
-        if ($this->getEnabledDates()) {
-            $config['enabled'] = $this->getEnabledDates();
-        }
+        $component = $this;
 
-        return $config;
+        try {
+            if ($state instanceof CarbonInterface) {
+                return $state->setTimezone($component->getTimezone());
+            }
+            $state = Carbon::createFromFormat($component->getFormat(), (string) $state, config('app.timezone'));
+
+            return $state->setTimezone($component->getTimezone());
+        } catch (InvalidFormatException $exception) {
+            try {
+                $state = Carbon::parse($state, config('app.timezone'));
+                $state = $state->shiftTimezone($component->getTimezone());
+
+                return $state->setTimezone(config('app.timezone'));
+            } catch (InvalidFormatException $exception) {
+                return null;
+            }
+        }
     }
 
-    public function isTime(): bool
+    public function hydrateFlatpickr(Flatpickr $component, $state): void
     {
-        return $this->time;
-    }
-
-    public function time(bool $time = true): static
-    {
-        $this->prefixIcon('heroicon-o-clock');
-        $this->time = $time;
-
-        return $this;
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->prefixIcon('heroicon-o-calendar-days');
-        $this->prevArrow(
-            '
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                        </svg>
-                    '
-        );
-        $this->nextArrow(
-            '
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-            '
-        );
-        $this->theme(config('coolsam-flatpickr.default_theme', FlatpickrTheme::DEFAULT));
-
-        if (! $this->dehydrateStateUsing) {
-            $this->dehydrateStateUsing(static function (Flatpickr $component, $state) {
-                return self::dehydratePickerState($component, $state);
-            });
+        if (blank($state)) {
+            return;
         }
 
-        /*$this->rule(
-            'date',
-            static fn(Flatpickr $component): bool => (!$component->isRangePicker() && !$component->isMultiplePicker() && !$component->isWeekSelect()),
-        );*/
+        if ($component->isMultiplePicker()) {
+            $conjunction = $this->getConjunction();
+            if (is_array($state)) {
+                $state = collect($state)->map(static fn ($date) => $component->parseToCarbon($date));
+            } else {
+                $state = collect([$state])->map(static fn ($date) => $component->parseToCarbon($date));
+            }
+            $state = $state
+                ->filter(static fn ($date) => $date instanceof CarbonInterface);
+        } elseif ($component->isRangePicker()) {
+            $conjunction = ' to ';
+            if (is_array($state)) {
+                $state = collect($state)->map(static fn ($date) => $component->parseToCarbon($date));
+            } else {
+                $state = collect([$state])->map(static fn ($date) => $component->parseToCarbon($date));
+            }
+            $state = $state
+                ->filter(static fn ($date) => $date instanceof CarbonInterface)
+                ->take(2);
+        } else {
+            $conjunction = null;
+            $state = $component->parseToCarbon($state);
+        }
+
+        if ($state instanceof CarbonInterface) {
+            if (! $component->isNative()) {
+                $component->state($state->format($component->getFormat()));
+
+                return;
+            }
+
+            if (! $component->hasTime()) {
+                $component->state($state->toDateString());
+
+                return;
+            }
+
+            $precision = $component->hasSeconds() ? 'second' : 'minute';
+
+            if (! $component->hasDate()) {
+                $component->state($state->toTimeString($precision));
+
+                return;
+            }
+
+            $component->state($state->toDateTimeString($precision));
+        } elseif ($state instanceof Collection) {
+            $state = $state->map(function ($date) use ($component) {
+                if (! $component->isNative()) {
+                    return $date->format($component->getFormat());
+                }
+                if (! $component->hasTime()) {
+                    return $date->toDateString();
+                }
+                $precision = $component->hasSeconds() ? 'second' : 'minute';
+                if (! $component->hasDate()) {
+                    return $date->toTimeString($precision);
+                }
+
+                return $date->toDateTimeString($precision);
+            })
+                ->implode($conjunction);
+            $component->state($state);
+
+            return;
+        } else {
+            $component->state(null);
+
+            return;
+        }
     }
 
-    public static function dehydratePickerState($component, $state)
+    public static function dehydrateFlatpickr(Flatpickr $component, $state): array | CarbonInterface | null
     {
         if (blank($state)) {
             return null;
         }
+        $component->rule(
+            'date',
+            static fn (Flatpickr $component): bool => $component->isMultiplePicker() && ! $component->isRangePicker() && $component->hasDate(),
+        );
+        // try to convert the state to a Carbon instance
+        try {
+            $res = $component->parseToCarbon($state);
+            if ($res) {
+                $state = $res;
+            }
+        } catch (InvalidFormatException $exception) {
+            // if it fails, return the state as is
+            return $state;
+        }
+
         if (! $state instanceof CarbonInterface) {
-            if ($component->isRangePicker() || $component->getMode() === FlatpickrMode::RANGE) {
-                $range = \Str::of($state)->explode(' to ');
-                $state = collect($range)->map(fn ($date) => Carbon::parse($date)
-                    ->setTimezone(config('app.timezone'))->format($component->getDateFormat()))
+            if (is_string($state)) {
+                if ($component->isRangePicker()) {
+                    $range = str($state)->explode(' to ');
+                } elseif ($component->isMultiplePicker()) {
+                    $range = str($state)->explode($component->getConjunction());
+                } else {
+                    $range = [$state];
+                }
+
+                return collect($range)->map(function ($date) use ($component) {
+                    $date = $component->parseToCarbon($date)
+                        ->setTimezone($component->getTimezone());
+
+                    if (! $component->isNative()) {
+                        return $date->format($component->getFormat());
+                    }
+
+                    if (! $component->hasTime()) {
+                        return $date->toDateString();
+                    }
+
+                    $precision = $component->hasSeconds() ? 'second' : 'minute';
+
+                    if (! $component->hasDate()) {
+                        return $date->toTimeString($precision);
+                    }
+
+                    return $date->toDateTimeString();
+                })
                     ->toArray();
-            } elseif ($component->isMultiplePicker()) {
-                $range = \Str::of($state)->explode($component->getConjunction());
-                $state = collect($range)->map(fn ($date) => Carbon::parse($date)
-                    ->setTimezone(config('app.timezone'))->format($component->getDateFormat()))
-                    ->toArray();
+            } else {
+                return $state;
             }
         }
 
         return $state;
     }
 
-    public function mode(FlatpickrMode $mode): static
+    protected function setUp(): void
     {
-        $this->mode = $mode;
+        $this->afterStateHydrated(fn (Flatpickr $component, $state) => $component->hydrateFlatpickr(
+            $component,
+            $state
+        ));
+
+        $this->dehydrateStateUsing(fn (Flatpickr $component, $state) => $component::dehydrateFlatpickr($component, $state));
+    }
+
+    public function altFormat(Closure | string | null $altFormat): Flatpickr
+    {
+        $this->displayFormat($altFormat);
 
         return $this;
     }
 
-    public function getMode(): string
-    {
-        return $this->mode->value;
-    }
-
-    public function altInputClass(?string $altInputClass = ''): static
-    {
-        $this->altInputClass = $altInputClass;
-
-        return $this;
-    }
-
-    public function getAltInputClass(): ?string
-    {
-        return $this->altInputClass;
-    }
-
-    public function allowInput(bool $allowInput = true): static
-    {
-        $this->allowInput = $allowInput;
-
-        return $this;
-    }
-
-    public function isAllowInput(): bool
-    {
-        return $this->allowInput;
-    }
-
-    public function isAllowInvalidPreload(): bool
-    {
-        return $this->allowInvalidPreload;
-    }
-
-    public function allowInvalidPreload(bool $allowInvalidPreload = true): static
-    {
-        $this->allowInvalidPreload = $allowInvalidPreload;
-
-        return $this;
-    }
-
-    public function getAriaDateFormat(): ?string
-    {
-        return $this->ariaDateFormat;
-    }
-
-    public function ariaDateFormat(?string $ariaDateFormat): static
-    {
-        $this->ariaDateFormat = $ariaDateFormat;
-
-        return $this;
-    }
-
-    public function getConjunction(): ?string
-    {
-        return $this->conjunction;
-    }
-
-    public function conjunction(?string $conjunction): static
-    {
-        $this->conjunction = $conjunction;
-
-        return $this;
-    }
-
-    public function isClickOpens(): bool
-    {
-        return $this->clickOpens;
-    }
-
-    public function clickOpens(bool $clickOpens = true): static
-    {
-        $this->clickOpens = $clickOpens;
-
-        return $this;
-    }
-
-    public function getDefaultHour(): int
-    {
-        return $this->defaultHour;
-    }
-
-    public function defaultHour(int $defaultHour): void
-    {
-        $this->defaultHour = $defaultHour;
-    }
-
-    public function getDefaultMinute(): int
-    {
-        return $this->defaultMinute;
-    }
-
-    public function defaultMinute(int $defaultMinute): static
-    {
-        $this->defaultMinute = $defaultMinute;
-
-        return $this;
-    }
-
-    public function getDefaultSeconds(): int
-    {
-        return $this->defaultSeconds;
-    }
-
-    public function defaultSeconds(int $defaultSeconds): static
-    {
-        $this->defaultSeconds = $defaultSeconds;
-
-        return $this;
-    }
-
-    public function getDisabledDates(): array
-    {
-        return $this->disabledDates;
-    }
-
-    public function disabledDates(array $disabledDates = []): static
-    {
-        $this->disabledDates = $disabledDates;
-
-        return $this;
-    }
-
-    public function getEnabledDates(): ?array
-    {
-        return $this->enabledDates;
-    }
-
-    public function enabledDates(array $enabledDates = []): static
-    {
-        $this->enabledDates = $enabledDates;
-
-        return $this;
-    }
-
-    public function isDisableMobile(): bool
-    {
-        return $this->disableMobile;
-    }
-
-    public function disableMobile(bool $disableMobile = true): static
-    {
-        $this->disableMobile = $disableMobile;
-
-        return $this;
-    }
-
-    public function isEnableSeconds(): bool
-    {
-        return $this->enableSeconds;
-    }
-
-    public function enableSeconds(bool $enableSeconds = true): static
-    {
-        $this->enableSeconds = $enableSeconds;
-
-        return $this;
-    }
-
-    public function getHourIncrement(): int
-    {
-        return $this->hourIncrement;
-    }
-
-    public function hourIncrement(int $hourIncrement = 1): static
-    {
-        $this->hourIncrement = $hourIncrement;
-
-        return $this;
-    }
-
-    public function getMinuteIncrement(): int
-    {
-        return $this->minuteIncrement;
-    }
-
-    public function minuteIncrement(int $minuteIncrement = 5): static
-    {
-        $this->minuteIncrement = $minuteIncrement;
-
-        return $this;
-    }
-
-    public function isInline(): bool
-    {
-        return $this->inline;
-    }
-
-    public function inline(bool $inline = true): static
-    {
-        $this->inline = $inline;
-
-        return $this;
-    }
-
-    public function getMaxDate(): Carbon|string|null
-    {
-        return $this->maxDate;
-    }
-
-    public function maxDate(Carbon|string|null|Closure $maxDate = 'now'): static
-    {
-        $this->maxDate = $maxDate ? Carbon::parse($maxDate) : $maxDate;
-
-        return $this;
-    }
-
-    public function getMinDate(): Carbon|string|null
-    {
-        return $this->minDate;
-    }
-
-    public function minDate(Carbon|string|null|Closure $minDate): static
-    {
-        $this->minDate = $minDate ? Carbon::parse($minDate) : $minDate;
-
-        return $this;
-    }
-
-    public function getMaxTime(): ?string
-    {
-        return $this->maxTime;
-    }
-
-    public function maxTime(?string $maxTime): static
-    {
-        $this->maxTime = $maxTime;
-
-        return $this;
-    }
-
-    public function getMinTime(): ?string
-    {
-        return $this->minTime;
-    }
-
-    public function minTime(?string $minTime): static
-    {
-        $this->minTime = $minTime;
-
-        return $this;
-    }
-
-    public function getNextArrow(): ?string
-    {
-        return $this->nextArrow;
-    }
-
-    public function nextArrow(?string $nextArrow = '>'): static
-    {
-        $this->nextArrow = $nextArrow;
-
-        return $this;
-    }
-
-    public function isNoCalendar(): bool
-    {
-        return $this->noCalendar;
-    }
-
-    public function noCalendar(bool $noCalendar = true): static
-    {
-        $this->noCalendar = $noCalendar;
-
-        return $this;
-    }
-
-    public function isShorthandCurrentMonth(): bool
-    {
-        return $this->shorthandCurrentMonth;
-    }
-
-    public function shorthandCurrentMonth(bool $shorthandCurrentMonth = true): static
-    {
-        $this->shorthandCurrentMonth = $shorthandCurrentMonth;
-
-        return $this;
-    }
-
-    public function isStatic(): bool
-    {
-        return $this->static;
-    }
-
-    public function static(bool $static = true): static
-    {
-        $this->static = $static;
-
-        return $this;
-    }
-
-    public function isUse24hr(): bool
-    {
-        return $this->use24hr;
-    }
-
-    public function use24hr(bool $use24hr = true): static
-    {
-        $this->use24hr = $use24hr;
-
-        return $this;
-    }
-
-    public function isWeekNumbers(): bool
-    {
-        return $this->weekNumbers;
-    }
-
-    public function weekNumbers(bool $weekNumbers = true): static
-    {
-        $this->weekNumbers = $weekNumbers;
-
-        return $this;
-    }
-
-    public function isWrap(): bool
-    {
-        return $this->wrap;
-    }
-
-    public function wrap(bool $wrap = true): static
-    {
-        $this->wrap = $wrap;
-
-        return $this;
-    }
-
-    public function getShowMonths(): int
-    {
-        return $this->showMonths;
-    }
-
-    public function showMonths(int $showMonths = 1): static
-    {
-        $this->showMonths = $showMonths;
-
-        return $this;
-    }
-
-    public function getPosition(): string
-    {
-        return $this->position->value;
-    }
-
-    public function position(FlatpickrPosition $position): static
-    {
-        $this->position = $position;
-
-        return $this;
-    }
-
-    public function getMonthSelectorType(): string
-    {
-        return $this->monthSelectorType->value;
-    }
-
-    public function monthSelectorType(FlatpickrMonthSelectorType $monthSelectorType): static
-    {
-        $this->monthSelectorType = $monthSelectorType;
-
-        return $this;
-    }
-
-    public function isAnimate(): bool
-    {
-        return $this->animate;
-    }
-
-    public function animate(bool $animate = true): static
-    {
-        $this->animate = $animate;
-
-        return $this;
-    }
-
-    public function isCloseOnSelect(): bool
-    {
-        return $this->closeOnSelect;
-    }
-
-    public function closeOnSelect(bool $closeOnSelect = true): static
-    {
-        $this->closeOnSelect = $closeOnSelect;
-
-        return $this;
-    }
-
-    public function getPrevArrow(): ?string
-    {
-        return $this->prevArrow;
-    }
-
-    public function prevArrow(?string $prevArrow): static
-    {
-        $this->prevArrow = $prevArrow;
-
-        return $this;
-    }
-
-    public function weekSelect(bool $weekSelect = true): static
-    {
-        $this->weekSelect = $weekSelect;
-
-        return $this;
-    }
-
-    public function isWeekSelect(): bool
-    {
-        return $this->weekSelect;
-    }
-
-    public function customConfig(array|\Closure $config): static
-    {
-        $this->config = $config;
-
-        return $this;
-    }
-
-    public function getCustomConfig(): array
-    {
-        return $this->config;
-    }
-
-    public function range(bool $rangePicker = true): static
-    {
-        $this->rangePicker = $rangePicker;
-
-        return $this;
-    }
-
-    public function isRangePicker(): bool
-    {
-        return $this->rangePicker;
-    }
-
-    public function multiple(bool $multiplePicker = true): static
-    {
-        $this->multiplePicker = $multiplePicker;
-
-        return $this;
-    }
-
-    public function isMultiplePicker(): bool
-    {
-        return $this->multiplePicker;
-    }
-
-    public function monthSelect(?bool $monthSelect = true): static
-    {
-        $this->monthSelect = $monthSelect;
-
-        return $this;
-    }
-
-    public function isMonthSelect(): bool
-    {
-        return $this->monthSelect;
-    }
-
-    public function altInput(bool $altInput = true): static
+    public function altInput(Closure | bool $altInput = true): Flatpickr
     {
         $this->altInput = $altInput;
 
         return $this;
     }
 
-    public function isAltInput(): bool
+    public function altInputClass(Closure | string $altInputClass): Flatpickr
     {
-        return $this->altInput;
-    }
-
-    public function enableTime(bool $enableTime = true): static
-    {
-        $this->enableTime = $enableTime;
+        $this->altInputClass = $altInputClass;
 
         return $this;
     }
 
-    public function isEnableTime(): bool
+    public function allowInput(Closure | bool $allowInput = true): Flatpickr
     {
-        return $this->enableTime;
-    }
-
-    public function dateFormat(string $dateFormat): static
-    {
-        $this->dateFormat = $dateFormat;
+        $this->allowInput = $allowInput;
 
         return $this;
     }
 
-    public function getDateFormat(): ?string
+    public function allowInvalidPreload(Closure | bool $allowInvalidPreload = true): Flatpickr
     {
-        return $this->dateFormat;
-    }
-
-    public function altFormat(string $altFormat): static
-    {
-        $this->altFormat = $altFormat;
+        $this->allowInvalidPreload = $allowInvalidPreload;
 
         return $this;
     }
 
+    public function appendTo(Closure | string | null $appendTo = null): Flatpickr
+    {
+        $this->appendTo = $appendTo;
+
+        return $this;
+    }
+
+    public function ariaDateFormat(Closure | string | null $ariaDateFormat): Flatpickr
+    {
+        $this->ariaDateFormat = $ariaDateFormat;
+
+        return $this;
+    }
+
+    public function conjunction(Closure | string $conjunction = ','): Flatpickr
+    {
+        $this->conjunction = $conjunction;
+
+        return $this;
+    }
+
+    public function clickOpens(Closure | bool $clickOpens = true): Flatpickr
+    {
+        $this->clickOpens = $clickOpens;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     *
+     * @deprecated use format() instead
+     */
+    public function dateFormat(Closure | string | null $dateFormat): Flatpickr
+    {
+        $this->format($dateFormat);
+
+        return $this;
+    }
+
+    public function defaultDate(Closure | string | array | null $defaultDate): Flatpickr
+    {
+        $this->defaultDate = $defaultDate;
+
+        return $this;
+    }
+
+    public function defaultHour(Closure | int $defaultHour): Flatpickr
+    {
+        $this->defaultHour = $defaultHour;
+
+        return $this;
+    }
+
+    public function defaultMinute(Closure | int $defaultMinute): Flatpickr
+    {
+        $this->defaultMinute = $defaultMinute;
+
+        return $this;
+    }
+
+    public function disableDates(Closure | array | null $disableDates = null): Flatpickr
+    {
+        $this->disableDates = $disableDates;
+
+        return $this;
+    }
+
+    public function disableMobile(Closure | bool $disableMobile = true): Flatpickr
+    {
+        $this->disableMobile = $disableMobile;
+
+        return $this;
+    }
+
+    public function enableDates(Closure | array | null $enableDates): Flatpickr
+    {
+        $this->enableDates = $enableDates;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     *
+     * @deprecated use time() instead
+     */
+    public function enableTime(Closure | bool $enableTime = true): Flatpickr
+    {
+        $this->time($enableTime);
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     *
+     * @deprecated use seconds() instead
+     */
+    public function enableSeconds(Closure | bool $enableSeconds = true): Flatpickr
+    {
+        $this->seconds($enableSeconds);
+
+        return $this;
+    }
+
+    public function hourIncrement(Closure | int $hourIncrement): Flatpickr
+    {
+        $this->hourIncrement = $hourIncrement;
+
+        return $this;
+    }
+
+    public function minuteIncrement(Closure | int $minuteIncrement): Flatpickr
+    {
+        $this->minuteIncrement = $minuteIncrement;
+
+        return $this;
+    }
+
+    public function mode(Closure | FlatpickrMode $mode): Flatpickr
+    {
+        $this->mode = $mode;
+
+        return $this;
+    }
+
+    public function noCalendar(Closure | bool $noCalendar = true): Flatpickr
+    {
+        $this->noCalendar = $noCalendar;
+
+        return $this;
+    }
+
+    public function position(Closure | FlatpickrPosition $position): Flatpickr
+    {
+        $this->position = $position;
+
+        return $this;
+    }
+
+    public function prevArrow(Closure | string | null $prevArrow): Flatpickr
+    {
+        $this->prevArrow = $prevArrow;
+
+        return $this;
+    }
+
+    public function nextArrow(Closure | string | null $nextArrow): Flatpickr
+    {
+        $this->nextArrow = $nextArrow;
+
+        return $this;
+    }
+
+    public function shorthandCurrentMonth(Closure | bool $shorthandCurrentMonth = true): Flatpickr
+    {
+        $this->shorthandCurrentMonth = $shorthandCurrentMonth;
+
+        return $this;
+    }
+
+    public function showMonths(Closure | int $showMonths = 2): Flatpickr
+    {
+        $this->showMonths = $showMonths;
+
+        return $this;
+    }
+
+    public function time24hr(Closure | bool $time24hr = true): Flatpickr
+    {
+        $this->time24hr = $time24hr;
+
+        return $this;
+    }
+
+    public function weekNumbers(Closure | bool $weekNumbers = true): Flatpickr
+    {
+        $this->weekNumbers = $weekNumbers;
+
+        return $this;
+    }
+
+    public function monthSelectorType(Closure | FlatpickrMonthSelectorType $monthSelectorType): Flatpickr
+    {
+        $this->monthSelectorType = $monthSelectorType;
+
+        return $this;
+    }
+
+    public function weekPicker(Closure | bool $weekPicker = true): Flatpickr
+    {
+        $this->weekPicker = $weekPicker;
+
+        return $this;
+    }
+
+    public function monthPicker(Closure | bool $monthPicker = true): Flatpickr
+    {
+        $this->monthPicker = $monthPicker;
+
+        return $this;
+    }
+
+    public function rangePicker(Closure | bool $rangePicker = true): Flatpickr
+    {
+        $this->rangePicker = $rangePicker;
+
+        return $this;
+    }
+
+    public function multiplePicker(Closure | bool $multiplePicker = true): Flatpickr
+    {
+        $this->multiplePicker = $multiplePicker;
+
+        return $this;
+    }
+
+    public function timePicker(Closure | bool $timePicker = true): Flatpickr
+    {
+        $this->timePicker = $timePicker;
+        $this->time($timePicker);
+        $this->noCalendar($timePicker);
+
+        return $this;
+    }
+
+    // Getters
+
+    /**
+     * @deprecated use getDisplayFormat() instead
+     */
     public function getAltFormat(): ?string
     {
-        return $this->altFormat;
+        return $this->getDisplayFormat();
     }
 
-    public function theme(FlatpickrTheme $theme): static
+    public function getAltInput(): bool
     {
-        $this->theme = $theme;
-
-        return $this;
+        return $this->evaluate($this->altInput);
     }
 
-    public function getTheme(): string
+    public function getAltInputClass(): string
     {
-        return $this->theme->value;
+        return $this->evaluate($this->altInputClass);
     }
 
-    public function getThemeAsset(): string
+    public function getAllowInput(): bool
     {
-        if ($this->getTheme() === FlatpickrTheme::DEFAULT->value) {
-            $this->theme(FlatpickrTheme::LIGHT);
+        return $this->evaluate($this->allowInput);
+    }
+
+    public function getAllowInvalidPreload(): bool
+    {
+        return $this->evaluate($this->allowInvalidPreload);
+    }
+
+    public function getAppendTo(): ?string
+    {
+        return $this->evaluate($this->appendTo);
+    }
+
+    public function getAriaDateFormat(): ?string
+    {
+        return $this->evaluate($this->ariaDateFormat);
+    }
+
+    public function getConjunction(): string
+    {
+        return $this->evaluate($this->conjunction) ?? ',';
+    }
+
+    public function getClickOpens(): bool
+    {
+        return $this->evaluate($this->clickOpens);
+    }
+
+    /**
+     * @deprecated use getFormat() instead
+     */
+    public function getDateFormat(): ?string
+    {
+        return $this->evaluate($this->dateFormat);
+    }
+
+    public function getDefaultDate(): string | array | null
+    {
+        return $this->evaluate($this->defaultDate);
+    }
+
+    public function getDefaultHour(): int
+    {
+        return $this->evaluate($this->defaultHour);
+    }
+
+    public function getDefaultMinute(): int
+    {
+        return $this->evaluate($this->defaultMinute);
+    }
+
+    public function getDisableDates(): ?array
+    {
+        return $this->evaluate($this->disableDates);
+    }
+
+    public function getDisableMobile(): bool
+    {
+        return $this->evaluate($this->disableMobile);
+    }
+
+    public function getEnableDates(): ?array
+    {
+        return $this->evaluate($this->enableDates);
+    }
+
+    /**
+     * @deprecated use hasTime() instead
+     */
+    public function getEnableTime(): bool
+    {
+        return $this->hasTime();
+    }
+
+    /**
+     * @deprecated Use hasSeconds() instead
+     */
+    public function getEnableSeconds(): bool
+    {
+        return $this->hasSeconds();
+    }
+
+    public function getHourIncrement(): int
+    {
+        return $this->evaluate($this->hourIncrement);
+    }
+
+    public function getMinuteIncrement(): int
+    {
+        return $this->evaluate($this->minuteIncrement);
+    }
+
+    public function getMode(): FlatpickrMode
+    {
+        return $this->evaluate($this->mode);
+    }
+
+    public function hasNoCalendar(): bool
+    {
+        return $this->evaluate($this->noCalendar);
+    }
+
+    public function getPosition(): FlatpickrPosition
+    {
+        return $this->evaluate($this->position);
+    }
+
+    public function getPrevArrow(): ?string
+    {
+        return $this->evaluate($this->prevArrow);
+    }
+
+    public function getNextArrow(): ?string
+    {
+        return $this->evaluate($this->nextArrow);
+    }
+
+    public function getShorthandCurrentMonth(): bool
+    {
+        return FilamentFlatpickr::getBool($this->evaluate($this->shorthandCurrentMonth));
+    }
+
+    public function getShowMonths(): int
+    {
+        return FilamentFlatpickr::getInt($this->evaluate($this->showMonths));
+    }
+
+    public function getTime24hr(): bool
+    {
+        return FilamentFlatpickr::getBool($this->evaluate($this->time24hr));
+    }
+
+    public function getWeekNumbers(): bool
+    {
+        return FilamentFlatpickr::getBool($this->evaluate($this->weekNumbers));
+    }
+
+    public function getMonthSelectorType(): FlatpickrMonthSelectorType
+    {
+        return $this->evaluate($this->monthSelectorType);
+    }
+
+    public function isTimePicker(): bool
+    {
+        return FilamentFlatpickr::getBool($this->evaluate($this->timePicker)) || ($this->hasNoCalendar() && $this->hasTime());
+    }
+
+    public function isWeekPicker(): bool
+    {
+        return FilamentFlatpickr::getBool($this->evaluate($this->weekPicker));
+    }
+
+    public function isMonthPicker(): bool
+    {
+        return FilamentFlatpickr::getBool($this->evaluate($this->monthPicker));
+    }
+
+    public function isRangePicker(): bool
+    {
+        return FilamentFlatpickr::getBool($this->evaluate($this->rangePicker) || $this->getMode()->value === FlatpickrMode::RANGE->value);
+    }
+
+    public function isMultiplePicker(): bool
+    {
+        return FilamentFlatpickr::getBool($this->evaluate($this->multiplePicker) || $this->getMode()->value === FlatpickrMode::MULTIPLE->value);
+    }
+
+    public function getFlatpickrAttributes(): array
+    {
+        $attrs = collect();
+        if (filled($this->getDisplayFormat())) {
+            $attrs->put('altFormat', $this->getDisplayFormat());
+        }
+        if (filled($this->getAltInput())) {
+            $attrs->put('altInput', FilamentFlatpickr::getBool($this->getAltInput()));
         }
 
-        return asset('css/'.static::PACKAGE_NAME.'/flatpickr-'.$this->getTheme().'-theme.css');
-    }
+        if (filled($this->getAltInputClass())) {
+            $attrs->put('altInputClass', $this->getAltInputClass());
+        }
 
-    public function getDarkThemeAsset(): string
-    {
-        return asset('css/'.static::PACKAGE_NAME.'/flatpickr-dark-theme.css');
-    }
+        if (filled($this->getAllowInput())) {
+            $attrs->put('allowInput', FilamentFlatpickr::getBool($this->getAllowInput()));
+        }
 
-    public function getLightThemeAsset(): string
-    {
-        return asset('css/'.static::PACKAGE_NAME.'/flatpickr-light-theme.css');
+        if (filled($this->getAllowInvalidPreload())) {
+            $attrs->put('allowInvalidPreload', FilamentFlatpickr::getBool($this->getAllowInvalidPreload()));
+        }
+
+        if (filled($this->getAppendTo())) {
+            $attrs->put('appendTo', $this->getAppendTo());
+        }
+
+        if (filled($this->getAriaDateFormat())) {
+            $attrs->put('ariaDateFormat', $this->getAriaDateFormat());
+        }
+
+        if (filled($this->getConjunction())) {
+            $attrs->put('conjunction', $this->getConjunction());
+        }
+
+        if (filled($this->getClickOpens())) {
+            $attrs->put('clickOpens', FilamentFlatpickr::getBool($this->getClickOpens()));
+        }
+
+        if (filled($this->getFormat())) {
+            $attrs->put('dateFormat', $this->getFormat());
+        }
+
+        if (filled($this->getDefaultDate())) {
+            $attrs->put('defaultDate', $this->getDefaultDate());
+        }
+
+        if (filled($this->getDefaultHour())) {
+            $attrs->put('defaultHour', FilamentFlatpickr::getInt($this->getDefaultHour()));
+        }
+
+        if (filled($this->getDefaultMinute())) {
+            $attrs->put('defaultMinute', FilamentFlatpickr::getInt($this->getDefaultMinute()));
+        }
+
+        if (filled($this->getDisableDates())) {
+            $attrs->put('disable', $this->getDisableDates());
+        }
+
+        if (filled($this->getDisableMobile())) {
+            $attrs->put('disableMobile', FilamentFlatpickr::getBool($this->getDisableMobile()));
+        }
+
+        if (filled($this->getEnableDates())) {
+            $attrs->put('enable', $this->getEnableDates());
+        }
+
+        if (filled($this->hasTime())) {
+            $attrs->put('enableTime', FilamentFlatpickr::getBool($this->hasTime()));
+        }
+
+        if (filled($this->hasSeconds())) {
+            $attrs->put('enableSeconds', FilamentFlatpickr::getBool($this->hasSeconds()));
+        }
+
+        if (filled($this->getHourIncrement())) {
+            $attrs->put('hourIncrement', FilamentFlatpickr::getInt($this->getHourIncrement()));
+        }
+
+        if (filled($this->getMinuteIncrement())) {
+            $attrs->put('minuteIncrement', FilamentFlatpickr::getInt($this->getMinuteIncrement()));
+        }
+
+        if (filled($this->getMode())) {
+            $attrs->put('mode', $this->getMode()->value);
+        }
+
+        if (filled($this->isRangePicker())) {
+            $attrs->put('rangePicker', ($isRange = FilamentFlatpickr::getBool($this->isRangePicker())));
+
+            if ($isRange) {
+                $attrs->put('mode', FlatpickrMode::RANGE->value);
+            }
+        }
+
+        if (filled($this->isMultiplePicker())) {
+            $attrs->put('multiplePicker', ($isMultiple = FilamentFlatpickr::getBool($this->isMultiplePicker())));
+            if ($isMultiple) {
+                $attrs->put('mode', FlatpickrMode::MULTIPLE->value);
+            }
+        }
+
+        if (filled($this->hasNoCalendar())) {
+            $attrs->put('noCalendar', FilamentFlatpickr::getBool($this->hasNoCalendar()));
+        }
+
+        if (filled($this->getPosition())) {
+            $attrs->put('position', $this->getPosition()->value);
+        }
+
+        if (filled($this->getPrevArrow())) {
+            $attrs->put('prevArrow', $this->getPrevArrow());
+        }
+
+        if (filled($this->getNextArrow())) {
+            $attrs->put('nextArrow', $this->getNextArrow());
+        }
+
+        if (filled($this->getShorthandCurrentMonth())) {
+            $attrs->put('shorthandCurrentMonth', FilamentFlatpickr::getBool($this->getShorthandCurrentMonth()));
+        }
+
+        if (filled($this->getShowMonths())) {
+            $attrs->put('showMonths', FilamentFlatpickr::getInt($this->getShowMonths()));
+        }
+
+        if (filled($this->getTime24hr())) {
+            $attrs->put('time_24hr', FilamentFlatpickr::getBool($this->getTime24hr()));
+        }
+
+        if (filled($this->getWeekNumbers())) {
+            $attrs->put('weekNumbers', FilamentFlatpickr::getBool($this->getWeekNumbers()));
+        }
+
+        if (filled($this->getMonthSelectorType())) {
+            $attrs->put('monthSelectorType', $this->getMonthSelectorType()->value);
+        }
+
+        if (filled($this->isWeekPicker())) {
+            $attrs->put('weekPicker', FilamentFlatpickr::getBool($this->isWeekPicker()));
+        }
+
+        if (filled($this->isMonthPicker())) {
+            $attrs->put('monthPicker', FilamentFlatpickr::getBool($this->isMonthPicker()));
+        }
+        if (filled($this->isTimePicker())) {
+            $isTimePicker = FilamentFlatpickr::getBool($this->isTimePicker());
+            $attrs->put('timePicker', $isTimePicker);
+            $attrs->put('noCalendar', $isTimePicker);
+            $attrs->put('enableTime', $isTimePicker);
+
+            if ($isTimePicker && (! $this->getFormat() || str($this->getFormat())->contains(['Y','m','d']))) {
+                $attrs->put('dateFormat', $this->hasSeconds() ? 'H:i:S' : 'H:i');
+                $attrs->put('altFormat', $this->hasSeconds() ? 'h:i:S K' : 'h:i K');
+            }
+        }
+
+        return $attrs->toArray();
     }
 }

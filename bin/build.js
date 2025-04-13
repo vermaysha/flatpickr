@@ -1,4 +1,4 @@
-import * as esbuild from 'esbuild'
+import esbuild from 'esbuild'
 
 const isDev = process.argv.includes('--dev')
 
@@ -46,5 +46,5 @@ const defaultOptions = {
 compile({
     ...defaultOptions,
     entryPoints: ['./resources/js/components/flatpickr.js'],
-    outfile: './resources/js/dist/components/flatpickr-component.js',
+    outfile: './resources/dist/components/flatpickr.js',
 })

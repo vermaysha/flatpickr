@@ -1,6 +1,6 @@
 <?php
 
-namespace Coolsam\FilamentFlatpickr\Enums;
+namespace Coolsam\Flatpickr\Enums;
 
 enum FlatpickrPosition: string
 {
