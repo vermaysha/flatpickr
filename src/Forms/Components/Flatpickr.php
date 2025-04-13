@@ -53,6 +53,7 @@ class Flatpickr extends DateTimePicker
     protected int | Closure $hourIncrement = 1;
 
     protected bool | Closure $inline = false;
+
     protected int | Closure $minuteIncrement = 5;
 
     protected FlatpickrMode | Closure $mode = FlatpickrMode::SINGLE;
@@ -197,6 +198,7 @@ class Flatpickr extends DateTimePicker
             'date',
             static fn (Flatpickr $component): bool => $component->isMultiplePicker() && ! $component->isRangePicker() && $component->hasDate(),
         );
+
         // try to convert the state to a Carbon instance
         try {
             $res = $component->parseToCarbon($state);
@@ -873,7 +875,7 @@ class Flatpickr extends DateTimePicker
             $attrs->put('noCalendar', $isTimePicker);
             $attrs->put('enableTime', $isTimePicker);
 
-            if ($isTimePicker && (! $this->getFormat() || str($this->getFormat())->contains(['Y','m','d']))) {
+            if ($isTimePicker && (! $this->getFormat() || str($this->getFormat())->contains(['Y', 'm', 'd']))) {
                 $attrs->put('dateFormat', $this->hasSeconds() ? 'H:i:S' : 'H:i');
                 $attrs->put('altFormat', $this->hasSeconds() ? 'h:i:S K' : 'h:i K');
             }

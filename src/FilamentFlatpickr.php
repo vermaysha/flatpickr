@@ -20,6 +20,7 @@ class FilamentFlatpickr
         if ($res === false) {
             return 0;
         }
+
         return $res;
     }
 }
