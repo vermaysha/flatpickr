@@ -1,5 +1,5 @@
 <?php
 
-use Coolsam\FilamentFlatpickr\Tests\TestCase;
+use Coolsam\Flatpickr\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);

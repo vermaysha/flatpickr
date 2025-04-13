@@ -1,16 +1,16 @@
 <?php
 
-namespace Coolsam\FilamentFlatpickr\Facades;
+namespace Coolsam\Flatpickr\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Coolsam\FilamentFlatpickr\FilamentFlatpickr
+ * @see FilamentFlatpickr
  */
 class FilamentFlatpickr extends Facade
 {
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
-        return \Coolsam\FilamentFlatpickr\FilamentFlatpickr::class;
+        return \Coolsam\Flatpickr\FilamentFlatpickr::class;
     }
 }

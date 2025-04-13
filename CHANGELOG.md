@@ -1,3 +1,7 @@
 # Changelog
 
-All notable changes to `filament-flatpickr` will be documented in this file.
+All notable changes to `flatpickr` will be documented in this file.
+
+## 1.0.0 - 202X-XX-XX
+
+- initial release
