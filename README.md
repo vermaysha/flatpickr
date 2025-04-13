@@ -110,6 +110,17 @@ The package supports the following state types:
 - `string` or `CarbonInterface` for DateTimePicker, DatePicker, TimePicker, WeekPicker, MonthPicker
 - `array` for RangePicker, MultiplePicker (an array of date strings or CarbonInterface instances)
 
+## Screenshots
+### Single Date Picker
+![image](https://github.com/user-attachments/assets/015ae745-96bd-4b5a-990a-11bba852aa14)
+
+### MultiPicker
+![image](https://github.com/user-attachments/assets/524a58b7-2b4e-44aa-a578-f6913cbb7ccd)
+
+### Date Range Picker
+![image](https://github.com/user-attachments/assets/3bcac5ad-5bfc-4a33-a320-3027c1e6a086)
+
+
 ## Testing
 
 ```bash
