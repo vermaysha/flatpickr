@@ -15,5 +15,5 @@ parameters:
         - php
         - php.stub
     bootstrapFiles:
-        - config/visual-forms.php
+        - config/flatpickr.php
 
