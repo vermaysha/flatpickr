@@ -102,6 +102,7 @@ class Flatpickr extends DateTimePicker
         } catch (InvalidFormatException $exception) {
             try {
                 $state = Carbon::parse($state, config('app.timezone'));
+
                 return $state->setTimezone(config('app.timezone'));
             } catch (InvalidFormatException $exception) {
                 return null;
