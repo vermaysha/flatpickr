@@ -15,6 +15,9 @@ use Illuminate\Support\Collection;
 
 class Flatpickr extends DateTimePicker
 {
+    /**
+     * @phpstan-ignore-next-line
+     */
     protected string $view = 'flatpickr::forms.components.flatpickr';
 
     protected bool | Closure $isNative = false;
