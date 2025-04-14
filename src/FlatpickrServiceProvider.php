@@ -33,10 +33,11 @@ class FlatpickrServiceProvider extends PackageServiceProvider
             ->hasCommands($this->getCommands())
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
-                    ->publishConfigFile()
-                    ->publishMigrations()
-                    ->askToRunMigrations()
-                    ->askToStarRepoOnGitHub('coolsam/flatpickr');
+                    ->publishAssets()
+//                    ->publishConfigFile()
+//                    ->publishMigrations()
+//                    ->askToRunMigrations()
+                    ->askToStarRepoOnGitHub('coolsam726/flatpickr');
             });
 
         $configFileName = $package->shortName();
