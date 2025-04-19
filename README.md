@@ -155,21 +155,39 @@ The package supports the following state types:
 
 **DEFAULT**
 
+![image](https://github.com/user-attachments/assets/ee615ae7-9956-45d6-a4d1-48054babf16c)
+
 **AIRBNB**
+
+![image](https://github.com/user-attachments/assets/6ec6e97d-e8ce-4d93-b27b-21fcead8d644)
 
 **LIGHT**
 
+![image](https://github.com/user-attachments/assets/fa190cb6-1bb4-4175-8733-bf261350c29c)
+
 **DARK**
+
+![image](https://github.com/user-attachments/assets/ddd59f71-5fdc-469f-91be-37e7c4e67fb9)
 
 **CONFETTI**
 
+![image](https://github.com/user-attachments/assets/2c76e329-678c-4443-ab42-ab4fd7230320)
+
 **MATERIAL_BLUE**
+
+![image](https://github.com/user-attachments/assets/db5074f8-22ad-493d-84e1-8e505f0c55be)
 
 **MATERIAL_GREEN**
 
+![image](https://github.com/user-attachments/assets/9d843720-4ef0-4768-ad71-1975a94922e0)
+
 **MATERIAL_ORANGE**
 
+![image](https://github.com/user-attachments/assets/74021b21-2244-448b-8177-04e888db82c9)
+
 **MATERIAL_RED**
+
+![image](https://github.com/user-attachments/assets/936fbdc7-f73a-437d-88e4-c333a193a72b)
 
 ## Testing
 
