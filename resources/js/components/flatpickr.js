@@ -33,11 +33,15 @@ export default function flatpickrComponent(state, attrs) {
     fp: null,
 
     init: function() {
+      console.log('INit flatpickr', this.state, this.attrs)
+      Livewire.on('attributes-updated', (props) => {
+        console.log('Attributes updated', props)
+      })
       const customLocale = flatpickrLocales[this.locale] ?? flatpickrLocales['en'];
       const plugins = [
-        new ConfirmDate({
-          showAlways: false,
-        }),
+        // new ConfirmDate({
+        //   showAlways: false,
+        // }),
       ];
       if (this.attrs.monthPicker) {
         plugins.push(new MonthSelect({
@@ -67,6 +71,9 @@ export default function flatpickrComponent(state, attrs) {
       this.fp = flatpickr(this.$refs.input, config);
       this.fp.parseDate(this.state, this.fp.config.dateFormat);
     },
+    updateAttributes(attrs) {
+        console.log('Update attributes', attrs)
+    }
   }
 }
 

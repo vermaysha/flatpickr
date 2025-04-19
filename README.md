@@ -24,9 +24,13 @@ Install the package via composer:
 composer require coolsam/flatpickr
 ```
 
+Run the installation command to publish the assets and config file:
+
 ```bash
 php artisan flatpickr:install
 ```
+This will publish the config file to `config/flatpickr.php` and the assets to `public/vendor/flatpickr`. The command will also ask you if you would like to overwrite the existing assets and config files if they exist.
+If you choose to overwrite, the existing files will be replaced with the new ones. This is useful if you want to update the package to the latest version there have been changes to the config file or assets in the latest version.
 
 If you are upgrading from a previous version be sure to run the following to ensure assets are up to date
 ```bash
@@ -70,7 +74,6 @@ Flatpickr::make('test_field')
     ->defaultMinute(0) // Initial value of the minutes element, when no date is selected
     ->allowInvalidPreload() // Initially check if the selected date is valid
     ->altInputClass('sample-class') // Add a css class for the alt input format
-    ->animate() // Animate transitions in the datepicker.
     ->format('Y-m-d') // Set the main date format
     ->ariaDateFormat('Y-m-d') // Aria
     ->clickOpens(true) // Open the datepicker when the input is clicked.
@@ -85,8 +88,7 @@ Flatpickr::make('test_field')
     ->position(\Coolsam\FilamentFlatpickr\Enums\FlatpickrPosition::AUTO_CENTER)
     ->showMonths(1)
     ->weekNumbers(true)
-    ->use24hr(true)
-    ->wrap(true)
+    ->time24hr(true)
     ->timePicker() // Configure a timepicker out of the box
     ->weekPicker() // configure a week picker out of the box
     ->monthPicker() // configure a month picker out of the box
@@ -104,6 +106,20 @@ Flatpickr::make('test_field')
 \Coolsam\Flatpickr\Forms\Components\Flatpickr::make('range')->rangePicker(),
 \Coolsam\Flatpickr\Forms\Components\Flatpickr::make('occupied_slots')->multiplePicker()->format('Y-m-d')->displayFormat('F j, Y'),
 ```
+
+## Flatpickr Themes (See [Flatpickr Docs](https://flatpickr.js.org/themes/) for more Details)
+> **Note:** I highly recommend that you use the DEFAULT theme, which is styled using tailwind to conform to the filament design system. The other themes come with the flatpickr javascript package and may not conform to your Filament themeing, including dark mode.
+
+You can set the package's theme globally under the `theme` config  in the `config/flatpickr.php` file. The config accepts a `\Coolsam\Flatpickr\Enums\FlatpickrTheme` enum value.
+The `\Coolsam\Flatpickr\Enums\FlatpickrTheme::DEFAULT` theme is already set by default and conforms to the filament design system.
+
+```php
+use Coolsam\FilamentFlatpickr\Enums\FlatpickrTheme;
+return [
+    'theme' => FlatpickrTheme::AIRBNB,
+];
+```
+See the screenshots below for the different themes.
 
 ## State Types
 The package supports the following state types:
@@ -132,10 +148,46 @@ The package supports the following state types:
 ### Week Picker
 ![image](https://github.com/user-attachments/assets/ea648d29-1bc2-46b7-9d82-301f500fab78)
 
-
 ### Month Picker
 ![image](https://github.com/user-attachments/assets/e542c3d7-08ac-411d-874b-7ae0718ea000)
 
+### Flatpickr Themes
+
+**DEFAULT**
+
+![image](https://github.com/user-attachments/assets/ee615ae7-9956-45d6-a4d1-48054babf16c)
+
+**AIRBNB**
+
+![image](https://github.com/user-attachments/assets/6ec6e97d-e8ce-4d93-b27b-21fcead8d644)
+
+**LIGHT**
+
+![image](https://github.com/user-attachments/assets/fa190cb6-1bb4-4175-8733-bf261350c29c)
+
+**DARK**
+
+![image](https://github.com/user-attachments/assets/ddd59f71-5fdc-469f-91be-37e7c4e67fb9)
+
+**CONFETTI**
+
+![image](https://github.com/user-attachments/assets/2c76e329-678c-4443-ab42-ab4fd7230320)
+
+**MATERIAL_BLUE**
+
+![image](https://github.com/user-attachments/assets/db5074f8-22ad-493d-84e1-8e505f0c55be)
+
+**MATERIAL_GREEN**
+
+![image](https://github.com/user-attachments/assets/9d843720-4ef0-4768-ad71-1975a94922e0)
+
+**MATERIAL_ORANGE**
+
+![image](https://github.com/user-attachments/assets/74021b21-2244-448b-8177-04e888db82c9)
+
+**MATERIAL_RED**
+
+![image](https://github.com/user-attachments/assets/936fbdc7-f73a-437d-88e4-c333a193a72b)
 
 ## Testing
 

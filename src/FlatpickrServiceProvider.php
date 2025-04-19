@@ -10,7 +10,9 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
+use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Artisan;
 use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -33,10 +35,28 @@ class FlatpickrServiceProvider extends PackageServiceProvider
             ->hasCommands($this->getCommands())
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
-                    ->publishAssets()
-//                    ->publishConfigFile()
-//                    ->publishMigrations()
-//                    ->askToRunMigrations()
+                    ->startWith(function (Command $command) {
+                        $command->alert('Installing Flatpickr...');
+                        $command->comment('Publishing package assets...');
+                        $overwriteAssets = $command->confirm(__('Do you want to overwrite the existing package assets if any?'), false);
+                        $assetPublish = [
+                            '--tag' => 'flatpickr-assets',
+                        ];
+                        if ($overwriteAssets) {
+                            $assetPublish['--force'] = true;
+                        }
+                        Artisan::call('vendor:publish', $assetPublish);
+                        $command->info('Done.');
+                        $command->comment('Publishing package config file...');
+                        $overwriteConfig = $command->confirm(__('Do you want to overwrite the package config file if existing?'), false);
+                        $configPublish = [
+                            '--tag' => 'flatpickr-config',
+                        ];
+                        if ($overwriteConfig) {
+                            $configPublish['--force'] = true;
+                        }
+                        Artisan::call('vendor:publish', $configPublish);
+                    })
                     ->askToStarRepoOnGitHub('coolsam726/flatpickr');
             });
 
@@ -68,6 +88,10 @@ class FlatpickrServiceProvider extends PackageServiceProvider
             $this->getAssets(),
             $this->getAssetPackageName()
         );
+
+        $this->publishes([
+            __DIR__ . '/../resources/dist' => public_path('vendor/flatpickr'),
+        ], 'flatpickr-assets');
 
         FilamentAsset::registerScriptData(
             $this->getScriptData(),
@@ -103,7 +127,7 @@ class FlatpickrServiceProvider extends PackageServiceProvider
         return [
             AlpineComponent::make('flatpickr', __DIR__ . '/../resources/dist/components/flatpickr.js'),
             Css::make('flatpickr-styles', __DIR__ . '/../resources/dist/flatpickr.css'),
-            //            Js::make('flatpickr-scripts', __DIR__ . '/../resources/dist/flatpickr.js'),
+            // Js::make('flatpickr-scripts', __DIR__ . '/../resources/dist/flatpickr.js'),
         ];
     }
 

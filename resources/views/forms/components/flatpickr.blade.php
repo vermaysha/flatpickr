@@ -17,8 +17,8 @@
     $suffixIcon = $getSuffixIcon();
     $suffixLabel = $getSuffixLabel();
     $statePath = $getStatePath();
-
     $attrs = $getFlatpickrAttributes();
+
 @endphp
 
 <x-dynamic-component
@@ -26,6 +26,7 @@
         :field="$field"
         :inline-label-vertical-alignment="\Filament\Support\Enums\VerticalAlignment::Center"
 >
+    <link rel="stylesheet" id="pickr-theme" type="text/css" href="{{$getThemeAsset()}}">
     <x-filament::input.wrapper
             wire:ignore
             :disabled="$isDisabled"
@@ -120,3 +121,10 @@
         </datalist>
     @endif
 </x-dynamic-component>
+@script
+<script>
+    $wire.on('attributes-updated', (args) => {
+        console.log(`Attributes have been updated. What to do?`, args);
+    })
+</script>
+@endscript
