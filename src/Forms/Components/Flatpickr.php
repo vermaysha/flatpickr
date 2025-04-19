@@ -8,10 +8,13 @@ use Closure;
 use Coolsam\Flatpickr\Enums\FlatpickrMode;
 use Coolsam\Flatpickr\Enums\FlatpickrMonthSelectorType;
 use Coolsam\Flatpickr\Enums\FlatpickrPosition;
+use Coolsam\Flatpickr\Enums\FlatpickrTheme;
 use Coolsam\Flatpickr\FilamentFlatpickr;
 use Filament\Forms\Components\DateTimePicker;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 
 class Flatpickr extends DateTimePicker
 {
@@ -565,6 +568,23 @@ class Flatpickr extends DateTimePicker
 
     // Getters
 
+    public function getThemeAsset(): string
+    {
+        /**
+         * @var FlatpickrTheme $theme
+         */
+        $theme = Config::get('flatpickr.theme', FlatpickrTheme::DEFAULT);
+        return $theme->getAsset() ?? '';
+    }
+
+    public function getLightThemeAsset() : string {
+        return FlatpickrTheme::LIGHT->getAsset();
+    }
+
+    public function getDarkThemeAsset(): string {
+        return FlatpickrTheme::DARK->getAsset();
+    }
+
     /**
      * @deprecated use getDisplayFormat() instead
      */
@@ -930,6 +950,7 @@ class Flatpickr extends DateTimePicker
             $attrs->put('inline', $this->isInline());
         }
 
+        $this->dispatchEvent('attributes-updated', id: $this->getId());
         return $attrs->toArray();
     }
 }

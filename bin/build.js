@@ -1,4 +1,6 @@
 import esbuild from 'esbuild'
+import fs from 'fs'
+import path from 'path'
 
 const isDev = process.argv.includes('--dev')
 
@@ -38,6 +40,24 @@ const defaultOptions = {
                 } else {
                     console.log(`Build finished at ${new Date(Date.now()).toLocaleTimeString()}: ${build.initialOptions.outfile}`)
                 }
+
+                console.log('Copying assets from node modules to dist folder')
+                const sourceDir = './node_modules/flatpickr/dist/themes'
+                const destDir = './resources/dist/themes'
+
+                // Ensure the destination directory exists
+                fs.mkdirSync(destDir, { recursive: true })
+
+                // Copy all theme files
+                fs.readdirSync(sourceDir).forEach((file) => {
+                    const sourceFile = path.join(sourceDir, file)
+                    const destFile = path.join(destDir, file)
+
+                    fs.copyFileSync(sourceFile, destFile)
+                    console.log(`Copied: ${file}`)
+                })
+
+                console.log('All theme assets have been copied successfully.')
             })
         }
     }],
