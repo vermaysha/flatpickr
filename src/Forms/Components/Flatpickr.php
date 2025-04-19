@@ -574,7 +574,7 @@ class Flatpickr extends DateTimePicker
          */
         $theme = Config::get('flatpickr.theme', FlatpickrTheme::DEFAULT);
 
-        return $theme->getAsset() ?? '';
+        return $theme->getAsset();
     }
 
     public function getLightThemeAsset(): string
