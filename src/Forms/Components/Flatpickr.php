@@ -14,7 +14,6 @@ use Filament\Forms\Components\DateTimePicker;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 
 class Flatpickr extends DateTimePicker
 {
@@ -574,14 +573,17 @@ class Flatpickr extends DateTimePicker
          * @var FlatpickrTheme $theme
          */
         $theme = Config::get('flatpickr.theme', FlatpickrTheme::DEFAULT);
+
         return $theme->getAsset() ?? '';
     }
 
-    public function getLightThemeAsset() : string {
+    public function getLightThemeAsset(): string
+    {
         return FlatpickrTheme::LIGHT->getAsset();
     }
 
-    public function getDarkThemeAsset(): string {
+    public function getDarkThemeAsset(): string
+    {
         return FlatpickrTheme::DARK->getAsset();
     }
 
@@ -951,6 +953,7 @@ class Flatpickr extends DateTimePicker
         }
 
         $this->dispatchEvent('attributes-updated', id: $this->getId());
+
         return $attrs->toArray();
     }
 }

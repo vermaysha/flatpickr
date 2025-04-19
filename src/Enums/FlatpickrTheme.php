@@ -2,9 +2,6 @@
 
 namespace Coolsam\Flatpickr\Enums;
 
-use Coolsam\Flatpickr\FilamentFlatpickr;
-use Filament\Support\Facades\FilamentAsset;
-
 enum FlatpickrTheme: string
 {
     case DEFAULT = 'default';
@@ -21,6 +18,7 @@ enum FlatpickrTheme: string
     public function getAsset(): string
     {
         $assetName = $this->value;
+
         try {
             return asset("vendor/flatpickr/themes/{$assetName}.css");
         } catch (\Exception $e) {

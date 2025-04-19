@@ -17,7 +17,6 @@ use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use function Laravel\Prompts\confirm;
 
 class FlatpickrServiceProvider extends PackageServiceProvider
 {
@@ -47,8 +46,8 @@ class FlatpickrServiceProvider extends PackageServiceProvider
                             $assetPublish['--force'] = true;
                         }
                         Artisan::call('vendor:publish', $assetPublish);
-                        $command->info("Done.");
-                        $command->comment("Publishing package config file...");
+                        $command->info('Done.');
+                        $command->comment('Publishing package config file...');
                         $overwriteConfig = $command->confirm(__('Do you want to overwrite the package config file if existing?'), false);
                         $configPublish = [
                             '--tag' => 'flatpickr-config',
