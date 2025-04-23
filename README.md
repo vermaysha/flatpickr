@@ -8,6 +8,8 @@
 </p>
 
 Use **[Flatpickr](https://flatpickr.js.org/)** as your datepicker in the Filament Forms and Panels.
+![image](https://github.com/user-attachments/assets/334ea64a-48c3-48bc-a640-72162802a646)
+
 
 ## Supported Versions
 | Package Version | Supported Filament Version(s) |
